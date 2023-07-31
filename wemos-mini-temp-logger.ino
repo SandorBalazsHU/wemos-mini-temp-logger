@@ -1,9 +1,12 @@
+#include <SPI.h>
+#include <SD.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <WEMOS_SHT3X.h>
 
 #define OLED_RESET 0
+const int chipSelect = D8;
 Adafruit_SSD1306 display(OLED_RESET);
 SHT3X sht30(0x45);
 
@@ -20,6 +23,9 @@ int robin = 0;
 
 void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  if (!SD.begin(chipSelect)) {
+    // don't do anything more
+  }
   for(int i=0; i<60; i++) {
     tempStore[i] = 0;
     humiStore[i] = 0;
@@ -63,6 +69,7 @@ void roundRobin(){
 void timer() {
   if (currentMillis - startMillis >= period) {
     process01();
+    dataLogger();
     startMillis = currentMillis;
   }
 }
@@ -118,6 +125,21 @@ void process01(){
       i++;
     }else{
       i = 0;
+    }
+  }
+}
+
+void dataLogger() {
+  if(sht30.get()==0){
+    String dataString = "";
+    dataString +=  String(sht30.cTemp);
+    dataString += ";";
+    dataString += String(sht30.humidity);
+    dataString += ";";
+    File dataFile = SD.open("datalog.txt", FILE_WRITE);
+    if (dataFile) {
+      dataFile.println(dataString);
+      dataFile.close();
     }
   }
 }
