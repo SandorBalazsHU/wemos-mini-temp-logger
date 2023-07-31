@@ -13,14 +13,10 @@ int i = 0;
 
 unsigned long startMillis;
 unsigned long currentMillis;
-const unsigned long period = 20000;
-
-unsigned long startMillis2;
-unsigned long currentMillis2;
-const unsigned long period2 = 60000;
+const unsigned long period = 60000;
 
 int currentScrean = 0;
-int duratation = 0;
+int robin = 0;
 
 void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -29,49 +25,45 @@ void setup() {
     humiStore[i] = 0;
   }
   startMillis = millis();
-  startMillis2 = millis();
   int currentScrean = 1;
 }
 
 void loop() {
   currentMillis = millis();
-  currentMillis2 = millis(); 
 
   if(millis() % 1000 < 10 ) {
     switch (currentScrean) {
       case 1:
-        duratation = 0;
         screen01();
         break;
       case 2:
         screen02();
-        duratation--;
-        if(duratation == 0) currentScrean = 1;
         break;
       case 3:
         screen03();
-        duratation--;
-        if(duratation == 0) currentScrean = 1;
         break;
       default:
         //--
         break;
     }
+    roundRobin();
   }
 
   timer();
 }
 
+void roundRobin(){
+  robin++;
+  if(robin<20) currentScrean = 1;
+  if(robin>=20 and robin<25) currentScrean = 2;
+  if(robin>=25 and robin<30) currentScrean = 3;
+  if(robin>=30) robin = 0;
+}
+
 void timer() {
   if (currentMillis - startMillis >= period) {
-    currentScrean = 2;
-    duratation = 3;
-    startMillis = currentMillis;
-  }
-
-  if (currentMillis2 - startMillis2 >= period2) {
     process01();
-    startMillis2 = currentMillis2;
+    startMillis = currentMillis;
   }
 }
 
