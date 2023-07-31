@@ -5,6 +5,8 @@
 #include <Adafruit_SSD1306.h>
 #include <WEMOS_SHT3X.h>
 
+//todo: Add error handling
+
 #define OLED_RESET 0
 const int chipSelect = D8;
 Adafruit_SSD1306 display(OLED_RESET);
@@ -14,9 +16,11 @@ int tempStore[60];
 int humiStore[60];
 int i = 0;
 
-unsigned long startMillis;
 unsigned long currentMillis;
+unsigned long startMillis;
+unsigned long startMillis2;
 const unsigned long period = 60000;
+const unsigned long period2 = 5000;
 
 int currentScrean = 0;
 int robin = 0;
@@ -31,6 +35,7 @@ void setup() {
     humiStore[i] = 0;
   }
   startMillis = millis();
+  startMillis2 = millis();
   int currentScrean = 1;
 }
 
@@ -69,8 +74,11 @@ void roundRobin(){
 void timer() {
   if (currentMillis - startMillis >= period) {
     process01();
-    dataLogger();
     startMillis = currentMillis;
+  }
+  if (currentMillis - startMillis2 >= period2) {
+    dataLogger();
+    startMillis2 = currentMillis;
   }
 }
 
