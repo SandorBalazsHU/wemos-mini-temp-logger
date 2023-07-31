@@ -36,7 +36,7 @@ void setup() {
   }
   startMillis = millis();
   startMillis2 = millis();
-  int currentScrean = 1;
+  currentScrean = 1;
 }
 
 void loop() {
